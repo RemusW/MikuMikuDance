@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpmdreader.a  CMakeFiles/pmdreader.dir/lib/pmdreader/bitmap.cpp.o CMakeFiles/pmdreader.dir/lib/pmdreader/mmdadapter.cc.o
+/usr/bin/ranlib libpmdreader.a

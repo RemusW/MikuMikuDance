@@ -1,0 +1,2 @@
+/usr/bin/ar qc libutgraphicsutil.a  CMakeFiles/utgraphicsutil.dir/lib/utgraphicsutil/debuggl.cc.o CMakeFiles/utgraphicsutil.dir/lib/utgraphicsutil/jpegio.cc.o
+/usr/bin/ranlib libutgraphicsutil.a

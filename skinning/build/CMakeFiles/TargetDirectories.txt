@@ -1,0 +1,7 @@
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/build/CMakeFiles/rebuild_cache.dir
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/build/CMakeFiles/edit_cache.dir
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/build/CMakeFiles/pmdreader.dir
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/build/CMakeFiles/utgraphicsutil.dir
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/build/src/CMakeFiles/rebuild_cache.dir
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/build/src/CMakeFiles/edit_cache.dir
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/build/src/CMakeFiles/skinning.dir
