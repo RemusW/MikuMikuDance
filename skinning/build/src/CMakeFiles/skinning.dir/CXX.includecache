@@ -27,6 +27,8 @@ memory
 -
 
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.cc
+iostream
+-
 config.h
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/config.h
 bone_geometry.h
@@ -37,8 +39,6 @@ fstream
 -
 queue
 -
-iostream
--
 stdexcept
 -
 glm/gtx/io.hpp
@@ -46,8 +46,6 @@ glm/gtx/io.hpp
 glm/gtx/transform.hpp
 -
 glm/gtc/quaternion.hpp
--
-iostream
 -
 glm/gtx/string_cast.hpp
 -

@@ -71,21 +71,23 @@ struct LineMesh {
 
 struct Bone {
 	Bone()
-		: bone_index(-1),
-		  parent_index(-1)
+		// : bone_index(-1),
+		//   parent_index(-1)
 	{
+	}
 
-	Bone(int id, Joint from, Joint to)
-		: joint_index(id),
-		  parent_index(parent),
-		  position(wcoord),
-		  init_position(wcoord),
-		  init_rel_position(init_position)
+	Bone(Joint* f, Joint* t)
+		: from(f),
+		  to(t)
+		// : bone_index(id),
+		//   position(wcoord),
+		//   init_position(wcoord),
+		//   init_rel_position(init_position)
 	{
 	}
 	
-	int bone_index;
-	int parent_index;
+	// int bone_index;
+	// int parent_index;
 	float length;
 	Joint* from;
 	Joint* to;
@@ -93,7 +95,7 @@ struct Bone {
 	glm::mat4 trans;
 
 	std::vector<int> children;
-}
+};
 
 struct Skeleton {
 	std::vector<Joint> joints;

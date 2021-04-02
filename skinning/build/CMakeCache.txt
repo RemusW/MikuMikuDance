@@ -293,9 +293,6 @@ Skinning_BINARY_DIR:STATIC=/home/remusw/Documents/Graphics/Proj4/skinning/skinni
 //Value Computed by CMake
 Skinning_SOURCE_DIR:STATIC=/home/remusw/Documents/Graphics/Proj4/skinning/skinning
 
-//The directory containing a CMake configuration file for glm.
-glm_DIR:PATH=glm_DIR-NOTFOUND
-
 //Path to a library.
 pkgcfg_lib_GLFW3_glfw3:FILEPATH=/usr/local/lib/libglfw3.a
 

@@ -222,15 +222,34 @@ int main(int argc, char* argv[])
 	// Setup the render pass for drawing bones
 	// FIXME: You won't see the bones until Skeleton::joints were properly
 	//        initialized
+	// std::vector<int> bone_vertex_id;
+	// std::vector<glm::uvec2> bone_indices;
+	// for (int i = 0; i < (int)mesh.skeleton.joints.size(); i++) {
+	// 	bone_vertex_id.emplace_back(i);
+	// }
+	// for (const auto& joint: mesh.skeleton.joints) {
+	// 	if (joint.parent_index < 0)
+	// 		continue;
+	// 	bone_indices.emplace_back(joint.joint_index, joint.parent_index);
+	// }
+	// RenderDataInput bone_pass_input;
+	// bone_pass_input.assign(0, "jid", bone_vertex_id.data(), bone_vertex_id.size(), 1, GL_UNSIGNED_INT);
+	// bone_pass_input.assignIndex(bone_indices.data(), bone_indices.size(), 2);
+	// RenderPass bone_pass(-1, bone_pass_input,
+	// 		{ bone_vertex_shader, nullptr, bone_fragment_shader},
+	// 		{ std_model, std_view, std_proj, joint_trans },
+	// 		{ "fragment_color" }
+	// 		);
+
 	std::vector<int> bone_vertex_id;
 	std::vector<glm::uvec2> bone_indices;
-	for (int i = 0; i < (int)mesh.skeleton.joints.size(); i++) {
+	for (int i = 0; i < (int)mesh.skeleton.bones.size(); i++) {
 		bone_vertex_id.emplace_back(i);
 	}
-	for (const auto& joint: mesh.skeleton.joints) {
-		if (joint.parent_index < 0)
+	for (const auto& bones: mesh.skeleton.bones) {
+		if (bones.to->joint_index < 0)
 			continue;
-		bone_indices.emplace_back(joint.joint_index, joint.parent_index);
+		bone_indices.emplace_back(bones.to->joint_index, bones.from->joint_index);
 	}
 	RenderDataInput bone_pass_input;
 	bone_pass_input.assign(0, "jid", bone_vertex_id.data(), bone_vertex_id.size(), 1, GL_UNSIGNED_INT);
@@ -240,7 +259,7 @@ int main(int argc, char* argv[])
 			{ std_model, std_view, std_proj, joint_trans },
 			{ "fragment_color" }
 			);
-
+			
 	// FIXME: Create the RenderPass objects for bones here.
 	//        Otherwise do whatever you like.
 

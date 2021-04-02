@@ -1,14 +1,13 @@
+#include <iostream>
 #include "config.h"
 #include "bone_geometry.h"
 #include "texture_to_render.h"
 #include <fstream>
 #include <queue>
-#include <iostream>
 #include <stdexcept>
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
 using namespace std;
@@ -97,19 +96,31 @@ void Mesh::loadPmd(const std::string& fn)
 	
 	// Build the joint data in the skeleton
 	for (int i = 1; i < skeleton.joints.size(); ++i) {
+		// cout << "Creating joint: " << i << endl;
 		Joint cur = skeleton.joints[i];
-		Joint parent = skeleton.joints[cur.parent_index];
-		parent.children.push_back(cur.joint_index);
+		Joint* parent = &skeleton.joints[cur.parent_index];
+		parent->children.emplace_back(i);
+		// cout << "Parent " << parent->joint_index << "'s Children: " << parent->children;
 	}
 
 	// Build the bones
 	// 1) loop through joints and build individual bones
-	for(int i=0; i<skeleton.joints.size() - 1; i++) {
-		Joint from = skeleton.joints[i];
-		for (int j = 0; j < from.children.size(); ++j) {
-			Bone b (i, &from, )
+	for(int i=0; i<skeleton.joints.size(); i++) {
+		Joint* from = &(skeleton.joints[i]);
+		// cout << "SIZE OF CHILDREN " << from.children.size() << endl;
+		for (int j = 0; j < from->children.size(); ++j) {
+			int child = from->children[j];
+			Joint* to = &(skeleton.joints[child]);
+			Bone b (from, to);
+			skeleton.bones.push_back(b);
+			cout << skeleton.bones.size() << endl;
 		}
-		Bone b (i, )
+		// Bone b (i, )
+	}
+	cout << skeleton.bones.size() << endl;
+	for(int i=0; i<skeleton.bones.size(); i++) {
+		Bone b = skeleton.bones[i];
+		cout << "From: " << b.from->joint_index << " -> " << b.to->joint_index << endl;
 	}
 }
 
