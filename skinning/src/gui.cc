@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/intersect.hpp>
 
 namespace {
 	// FIXME: Implement a function that performs proper
@@ -128,7 +129,27 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 	}
 
 	// FIXME: highlight bones that have been moused over
-	current_bone_ = -1;
+	current_bone_ = raycylinder_intersect(current_x_, current_y_);
+}
+
+int GUI::raycylinder_intersect(double x, double y) {
+	glm::mat4 invVP = glm::inverse(projection_matrix_ * view_matrix_);		// (VP)^-1
+	glm::vec4 world_cord = glm::vec4(x, y, 0, 0) * invVP;					// MVP * xy
+	glm::vec3 ray = glm::vec3(world_cord) - eye_;
+	// loop mesh_->skeleton.bones
+	float c0;
+	for (int i = 0; i < mesh_->skeleton.bones.size(); ++i) {
+		Bone* bone = &mesh_->skeleton.bones[i];
+		glm::vec3 rotT = glm::vec3(bone->rot[0][0], bone->rot[0][1], bone->rot[0][2]);
+		glm::vec3 v = glm::cross(ray, rotT);
+		glm::vec3 N = glm::cross(v, rotT);
+		
+		// glm::intersectRayPlane()		
+		// glm::vec4 t_ray (ray, 0);
+		// t_ray = glm::cross(bone->trans, t_ray);
+	}
+	
+	return -1;
 }
 
 void GUI::mouseButtonCallback(int button, int action, int mods)

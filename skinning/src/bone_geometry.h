@@ -87,14 +87,14 @@ struct Bone {
 	}
 	
 	// int bone_index;
-	// int parent_index;
+	//Bone* parent;
 	float length;
 	Joint* from;
 	Joint* to;
-	glm::mat4 rot;
 	glm::mat4 trans;
+	glm::mat4 rot;
 
-	std::vector<int> children;
+	std::vector<Bone*> children;
 };
 
 struct Skeleton {

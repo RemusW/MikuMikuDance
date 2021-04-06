@@ -183,18 +183,18 @@ texture_impl.inl
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/mmd/util/unpack.inc
 
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/mmdadapter.cc
-mmdadapter.h
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/mmdadapter.h
-mmd/mmdslim.hh
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/mmd/mmdslim.hh
-bitmap.h
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/bitmap.h
 iostream
 -
 exception
 -
 unordered_map
 -
+mmdadapter.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/mmdadapter.h
+mmd/mmdslim.hh
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/mmd/mmdslim.hh
+bitmap.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/bitmap.h
 
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/lib/pmdreader/mmdadapter.h
 material.h
