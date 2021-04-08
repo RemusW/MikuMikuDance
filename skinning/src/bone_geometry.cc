@@ -95,7 +95,7 @@ void Mesh::loadPmd(const std::string& fn)
 	}
 	
 	// Build the joint data in the skeleton
-	for (int i = 1; i < skeleton.joints.size(); ++i) {
+	for (size_t i = 1; i < skeleton.joints.size(); ++i) {
 		// cout << "Creating joint: " << i << endl;
 		Joint cur = skeleton.joints[i];
 		Joint* parent = &skeleton.joints[cur.parent_index];
@@ -105,8 +105,14 @@ void Mesh::loadPmd(const std::string& fn)
 	cout << "NUM JOINTS: " << skeleton.joints.size() << endl;
 
 	// Build the bones
-	// 1) loop through joints and build individual bones
-	for(int i=0; i<skeleton.joints.size(); i++) {
+	// Create root bone -1
+	Joint origin;
+	Bone root (&origin, &skeleton.joints[0]);
+	root.trans = glm::mat4(1);
+	root.rot = glm::mat4(1);
+	skeleton.bones.push_back(root);
+	// loop through joints and build individual bones
+	for(size_t i=0; i<skeleton.joints.size(); i++) {
 		Joint* from = &(skeleton.joints[i]);
 		// cout << "SIZE OF CHILDREN " << from.children.size() << endl;
 		for (int j = 0; j < from->children.size(); ++j) {
@@ -119,13 +125,58 @@ void Mesh::loadPmd(const std::string& fn)
 	
 	cout << "NUM BONES: " << skeleton.bones.size() << endl;
 	// Set up the T and R matricies. Find the children of each bone and add it to its children
-	for(int i=0; i<skeleton.bones.size(); i++) {
+	for(size_t i=0; i<skeleton.bones.size(); i++) {
 		Bone* bone = &skeleton.bones[i];
+		// cout << "Translation Matrix: " << glm::to_string(bone->trans) << endl;
+		// Find the children for the current bone and add it to its children vector
+		for(int k=i+1; k<skeleton.bones.size(); k++) {
+			Bone* child = &skeleton.bones[k];
+			if(child->from->joint_index == bone->to->joint_index) {
+				bone->children.emplace_back(child);
+			}
+		}
+	}
+	Bone* r = &skeleton.bones[0];
+	glm::mat4 M = glm::mat4(1.0f);
+	// glm::mat4 M = r->rot * r->trans;
+	recurseBoneTree(&skeleton.bones[0], M, true);
+
+	for(int i=0; i<15; i++) {
+		Bone* b = &skeleton.bones[i];
+		cout << "CHILDREN SIZE: " << b->children.size() << endl;
+		cout << "TRANS: " << glm::to_string(b->trans) << endl;
+		cout << "rot: " << glm::to_string(b->rot) << endl;
+	}
+
+
+}
+
+// Paremeters: current bone, M of parents
+// find cur bone's from and to position in parent's coords
+// calculate cur bone's rot and trans w.r.t. parent
+// upda
+void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, bool isRoot) {
+	if (isRoot) {
+		isRoot = false;
+	}
+	else {
+		// intialize basic values
 		bone->length = glm::length(bone->to->position - bone->from->position);
 		bone->rot = glm::mat4();
 		bone->trans = glm::mat4();
 		cout << "From: " << bone->from->joint_index << " -> " << bone->to->joint_index << endl;
-		glm::vec4 t = glm::vec4(glm::normalize(bone->to->position - bone->from->position), 0);
+
+		// calculate positions in parent coords
+		glm::mat4 invM = glm::inverse(M);
+		cout << "M: " << glm::to_string(M) << endl;
+		cout << "invM: " << glm::to_string(invM) << endl;
+		glm::vec4 from_pc = invM * glm::vec4(bone->from->position, 1);
+		glm::vec4 to_pc = invM * glm::vec4(bone->to->position, 1);
+		cout << "from: " << from_pc << endl;
+		cout << "to: " << to_pc << endl;
+		
+		// calculate the rotation
+		glm::vec4 t = glm::vec4(glm::normalize(glm::vec3(to_pc) - glm::vec3(from_pc)), 0);
 		glm::vec3 v = glm::vec3(t);
 		int index = 0;
 		for(int j=0; j<v.length(); j++) {
@@ -146,40 +197,23 @@ void Mesh::loadPmd(const std::string& fn)
 		rot[1] = n;
 		rot[2] = b;
 		rot[3] = glm::vec4(0,0,0,1);
-		bone->rot = glm::transpose(rot);
-		bone->trans = glm::mat4();
-		// if base, use world coordinates as T
-		if (bone->from->joint_index == 0) {
-			glm::vec3 tra = bone->from->init_position;
-			bone->trans[0][0] = tra[0];
-			bone->trans[1][1] = tra[1];
-			bone->trans[2][2] = tra[2];
-			bone->trans[3][3] = 1;
-			cout << "Translation Vector: " << glm::to_string(tra) << endl;
-			
-		}
-		else {
-			bone->trans[0][0] = bone->length;
-			bone->trans[1][1] = 0;
-			bone->trans[2][2] = 0;
-			bone->trans[3][3] = 1;
-		}
-		cout << "Translation Matrix: " << glm::to_string(bone->trans) << endl;
-		// Find the children for the current bone and add it to its children vector
-		for(int k=i+1; k<skeleton.bones.size(); k++) {
-			Bone* child = &skeleton.bones[k];
-			if(child->from->joint_index == bone->to->joint_index) {
-				bone->children.emplace_back(child);
-			}
-		}
-	}
+		bone->rot = rot;
 
-	for(int i=0; i<5; i++) {
-		Bone* b = &skeleton.bones[i];
-		cout << "CHILDREN SIZE: " << b->children.size() << endl;
-		cout << "TRANS: " << glm::to_string(b->trans) << endl;
-		cout << "rot: " << glm::to_string(b->rot) << endl;
+		// calc Translation
+		bone->trans = glm::mat4();
+		bone->trans[0][0] = 1;
+		bone->trans[1][1] = 1;
+		bone->trans[0][3] = bone->length;
+		bone->trans[2][2] = 1;
+		bone->trans[3][3] = 1;
+		bone->trans = glm::transpose(bone->trans);
+
+		M = M * bone->trans * bone->rot;
 	}
+	for (size_t i=0; i<bone->children.size(); ++i) {
+		recurseBoneTree(bone->children[i], M, isRoot);
+	}
+	
 }
 
 int Mesh::getNumberOfBones() const
