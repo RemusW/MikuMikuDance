@@ -71,8 +71,10 @@ struct LineMesh {
 
 struct Bone {
 	Bone()
-		// : bone_index(-1),
-		//   parent_index(-1)
+		: length(0),
+		  trans(glm::mat4(1)),
+		  rot(glm::mat4(1)),
+		  init_M(glm::mat4(1))
 	{
 	}
 
@@ -93,6 +95,7 @@ struct Bone {
 	Joint* to;
 	glm::mat4 trans;
 	glm::mat4 rot;
+	glm::mat4 init_M;
 
 	std::vector<Bone*> children;
 };
@@ -143,6 +146,7 @@ struct Mesh {
 private:
 	void computeBounds();
 	void computeNormals();
+	void recurseBoneTree(Bone* bone, glm::mat4 M, bool isRoot);
 	Configuration currentQ_;
 };
 
