@@ -36,9 +36,13 @@ src/CMakeFiles/skinning.dir/main.cc.o: ../src/main.cc
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/procedure_geometry.h
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/render_pass.h
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/shader_uniform.h
+src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/axes.frag
+src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/axes.vert
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/blending.vert
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/bone.frag
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/bone.vert
+src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/cylinder.frag
+src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/cylinder.vert
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/default.frag
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/default.geom
 src/CMakeFiles/skinning.dir/main.cc.o: ../src/shaders/default.vert

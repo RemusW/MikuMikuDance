@@ -37,9 +37,13 @@ src/CMakeFiles/skinning.dir/main.cc.o
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/procedure_geometry.h
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/render_pass.h
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shader_uniform.h
+ /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/axes.frag
+ /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/axes.vert
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/blending.vert
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/bone.frag
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/bone.vert
+ /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/cylinder.frag
+ /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/cylinder.vert
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/default.frag
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/default.geom
  /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/shaders/default.vert

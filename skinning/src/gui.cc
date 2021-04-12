@@ -11,6 +11,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/intersect.hpp>
 
+using namespace std;
+
 namespace {
 	// FIXME: Implement a function that performs proper
 	//        ray-cylinder intersection detection
@@ -129,27 +131,84 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 	}
 
 	// FIXME: highlight bones that have been moused over
-	current_bone_ = raycylinder_intersect(current_x_, current_y_);
+	glm::vec3 world_coord = glm::unProject(glm::vec3(current_x_, current_y_, 0),
+		model_matrix_, projection_matrix_,
+		glm::vec4(0, 0, window_width_, window_height_));
+	glm::vec4 ray = glm::vec4(world_coord - eye_, 1);
+	Bone* b = &mesh_->skeleton.bones[0];
+	float id = -1;
+	float t = 9999999;
+	raycylinder_intersect(&mesh_->skeleton.bones[0], glm::mat4(1), ray, id, t);
+	int index = -1;
+	for(size_t i=0; i<mesh_->skeleton.bones.size(); ++i) {
+		if(id == mesh_->skeleton.bones[i].id)
+			index = i;
+	}
+	cout << id << " " << index << endl;
+	// std::cout << t << std::endl;
+	current_bone_ = index;
 }
 
-int GUI::raycylinder_intersect(double x, double y) {
-	glm::mat4 invVP = glm::inverse(projection_matrix_ * view_matrix_);		// (VP)^-1
-	glm::vec4 world_cord = glm::vec4(x, y, 0, 0) * invVP;					// MVP * xy
-	glm::vec3 ray = glm::vec3(world_cord) - eye_;
-	// loop mesh_->skeleton.bones
-	float c0;
-	for (int i = 0; i < mesh_->skeleton.bones.size(); ++i) {
-		Bone* bone = &mesh_->skeleton.bones[i];
-		glm::vec3 rotT = glm::vec3(bone->rot[0][0], bone->rot[0][1], bone->rot[0][2]);
-		glm::vec3 v = glm::cross(ray, rotT);
-		glm::vec3 N = glm::cross(v, rotT);
-		
-		// glm::intersectRayPlane()		
-		// glm::vec4 t_ray (ray, 0);
-		// t_ray = glm::cross(bone->trans, t_ray);
+void GUI::raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::vec4 ray, float& id, float& t) {
+	// not the root bone, check intersection
+	if(bone->from->joint_index != -1) {
+		// transform ray into bone local
+		glm::mat4 M = M_parent * bone->rot;
+		glm::mat4 invM = glm::inverse(M);
+		ray = invM * ray;
+
+		// calculate t
+		glm::vec3 o = glm::vec3(invM * glm::vec4(eye_, 1));
+		float ox = o[1];
+		float oy = o[2];
+		float dx = ray[1];
+		float dy = ray[2];
+		float a = dx*dx + dy*dy;
+		float b = 2*ox*dx + 2*oy*dy;
+		float c = ox*ox + oy*oy - kCylinderRadius;
+		float d, e;
+		float temp_t;
+
+		if (a != 0) {
+			// cout << "	a: " << a << endl;
+			// cout << "	b: " << b << endl;
+			// cout << "	c: " << c << endl;
+			d = b / (2*a);
+			e = c - b*b/(4*a);
+			// DOES THIS ACTUALLY WORK????????????????????????????????????????????????????
+			float positive = sqrt(abs(-e/a))-d;
+			float negative = -1*sqrt(abs(-e/a))-d;
+			temp_t = positive < negative ? positive : negative;
+		}
+		else {
+			d = 0;
+			e = 0;
+			temp_t = 999999;
+		}
+
+		// check if it is within bounds of the height of the bone
+		glm::vec3 pos = o + glm::vec3(ray)*temp_t;
+		if(pos[0] <= bone->length && temp_t < t && temp_t >= 0) {
+			id = bone->id;
+			cout << "In tree " << id << endl;
+			t = temp_t;
+		}
+		// std::cout << t << " " << temp_t << std::endl;
+		M_parent = M;
 	}
+
+	// float c0;
+	// for (int i = 0; i < mesh_->skeleton.bones.size(); ++i) {
+	// 	Bone* bone = &mesh_->skeleton.bones[i];
+	// 	ray = glm::inverse(bone->init_M) * ray;
+	// 	// glm::intersectRayPlane()		
+	// 	// glm::vec4 t_ray (ray, 0);
+	// 	// t_ray = glm::cross(bone->trans, t_ray);
+	// }
 	
-	return -1;
+	for (size_t i=0; i<bone->children.size(); ++i) {
+		raycylinder_intersect(bone->children[i], M_parent, ray, id, t);
+	}
 }
 
 void GUI::mouseButtonCallback(int button, int action, int mods)

@@ -26,30 +26,6 @@ glm/glm.hpp
 memory
 -
 
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.cc
-iostream
--
-config.h
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/config.h
-bone_geometry.h
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.h
-texture_to_render.h
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/texture_to_render.h
-fstream
--
-queue
--
-stdexcept
--
-glm/gtx/io.hpp
--
-glm/gtx/transform.hpp
--
-glm/gtc/quaternion.hpp
--
-glm/gtx/string_cast.hpp
--
-
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.h
 ostream
 -
@@ -70,5 +46,17 @@ mmdadapter.h
 
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/config.h
 
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/texture_to_render.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/procedure_geometry.cc
+procedure_geometry.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/procedure_geometry.h
+bone_geometry.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.h
+config.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/config.h
+
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/procedure_geometry.h
+vector
+-
+glm/glm.hpp
+-
 

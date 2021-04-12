@@ -49,6 +49,22 @@ const char* bone_fragment_shader =
 #include "shaders/bone.frag"
 ;
 
+const char* cylinder_vertex_shader =
+#include "shaders/cylinder.vert"
+;
+
+const char* cylinder_fragment_shader =
+#include "shaders/cylinder.frag"
+;
+
+const char* axes_vertex_shader =
+#include "shaders/axes.vert"
+;
+
+const char* axes_fragment_shader =
+#include "shaders/axes.frag"
+;
+
 // FIXME: Add more shaders here.
 
 void ErrorCallback(int error, const char* description) {
@@ -263,6 +279,36 @@ int main(int argc, char* argv[])
 	// FIXME: Create the RenderPass objects for bones here.
 	//        Otherwise do whatever you like.
 
+	RenderDataInput cylinder_pass_input;
+	cylinder_pass_input.assign(0, "vertex_position", cylinder_mesh.vertices.data(), cylinder_mesh.vertices.size(), 1, GL_FLOAT);
+	cylinder_pass_input.assignIndex(cylinder_mesh.indices.data(), cylinder_mesh.indices.size(), 2);
+	RenderPass cylinder_pass(-1,
+			cylinder_pass_input,
+			{ cylinder_vertex_shader, nullptr, cylinder_fragment_shader},
+			{ std_model, std_view, std_proj, joint_trans },
+			{ "fragment_color" }
+			);
+
+	RenderDataInput axes_pass_input;
+	axes_pass_input.assign(0, "vertex_position", axes_mesh.vertices.data(), axes_mesh.vertices.size(), 1, GL_FLOAT);
+	axes_pass_input.assignIndex(axes_mesh.indices.data(), axes_mesh.indices.size(), 2);
+	RenderPass axes_pass(-1,
+			axes_pass_input,
+			{ axes_vertex_shader, nullptr, axes_fragment_shader},
+			{ std_model, std_view, std_proj, joint_trans },
+			{ "fragment_color" }
+			);
+
+	// 	RenderDataInput floor_pass_input;
+	// floor_pass_input.assign(0, "vertex_position", floor_vertices.data(), floor_vertices.size(), 4, GL_FLOAT);
+	// floor_pass_input.assignIndex(floor_faces.data(), floor_faces.size(), 3);
+	// RenderPass floor_pass(-1,
+	// 		floor_pass_input,
+	// 		{ vertex_shader, geometry_shader, floor_fragment_shader},
+	// 		{ floor_model, std_view, std_proj, std_light },
+	// 		{ "fragment_color" }
+	// 		);
+
 	float aspect = 0.0f;
 	std::cout << "center = " << mesh.getCenter() << "\n";
 
@@ -311,6 +357,17 @@ int main(int argc, char* argv[])
 			                              GL_UNSIGNED_INT, 0));
 		}
 		draw_cylinder = (current_bone != -1 && gui.isTransparent());
+
+		if (true) {
+			cylinder_pass.setup();
+			axes_pass.setup();
+			CHECK_GL_ERROR(glDrawElements(GL_LINES,
+			                              cylinder_mesh.indices.size() * 2,
+			                              GL_UNSIGNED_INT, 0));
+			CHECK_GL_ERROR(glDrawElements(GL_LINES,
+			                              axes_mesh.indices.size() * 2,
+			                              GL_UNSIGNED_INT, 0));
+		}
 
 		// Then draw floor.
 		if (draw_floor) {

@@ -81,15 +81,19 @@ struct Bone {
 	Bone(Joint* f, Joint* t)
 		: from(f),
 		  to(t)
-		// : bone_index(id),
-		//   position(wcoord),
-		//   init_position(wcoord),
-		//   init_rel_position(init_position)
+	{
+	}
+
+	Bone(Joint* f, Joint* t, int i)
+		: from(f),
+		  to(t),
+		  id(i)
 	{
 	}
 	
 	// int bone_index;
 	//Bone* parent;
+	int id;
 	float length;
 	Joint* from;
 	Joint* to;

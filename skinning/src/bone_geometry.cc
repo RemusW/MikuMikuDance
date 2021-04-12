@@ -90,7 +90,7 @@ void Mesh::loadPmd(const std::string& fn)
 	while (mr.getJoint(count, w_coords, parent)) {
 		Joint j (count, w_coords, parent);
 		skeleton.joints.push_back(j);
-		
+		// cout << w_coords << endl;
 		++count;
 	}
 	
@@ -113,6 +113,7 @@ void Mesh::loadPmd(const std::string& fn)
 	root.trans = glm::mat4(1);
 	root.rot = glm::mat4(1);
 	skeleton.bones.push_back(root);
+	int id = 1;
 	// loop through joints and build individual bones
 	for(size_t i=0; i<skeleton.joints.size(); i++) {
 		Joint* from = &(skeleton.joints[i]);
@@ -120,7 +121,7 @@ void Mesh::loadPmd(const std::string& fn)
 		for (int j = 0; j < from->children.size(); ++j) {
 			int child = from->children[j];
 			Joint* to = &(skeleton.joints[child]);
-			Bone b (from, to);
+			Bone b (from, to, id++);
 			skeleton.bones.push_back(b);
 		}
 	}
@@ -140,32 +141,32 @@ void Mesh::loadPmd(const std::string& fn)
 	}
 	Bone* r = &skeleton.bones[0];
 	glm::mat4 M = glm::mat4(1.0f);
-	// glm::mat4 M = r->rot * r->trans;
-	// recurseBoneTree(&skeleton.bones[0], M, true);
+	recurseBoneTree(&skeleton.bones[0], M, true);
 
 	// for(int i=0; i<15; i++) {
 	// 	printBone(&skeleton.bones[i]);
 	// }
-	vector<Joint> dummy_data;
-	vector<Bone> dummy_bones;
-	dummy_data.push_back(Joint(0, glm::vec3(0, 0, 0), -1));
-	dummy_data.push_back(Joint(1, glm::vec3(0, 2, 0), 0));
-	dummy_data.push_back(Joint(2, glm::vec3(1, 2, 0), 1));
-	dummy_data.push_back(Joint(3, glm::vec3(1, 1, 0), 2));
-	dummy_data.push_back(Joint(4, glm::vec3(3, 1, 0), 3));
-	Joint dummy_origin;
-	Bone dummy_root (&dummy_origin, &dummy_data[0]);
-	dummy_root.trans = glm::mat4(1);
-	dummy_root.rot = glm::mat4(1);
-	dummy_bones.push_back(dummy_root);
-	for (int i = 0; i < dummy_data.size() - 1; ++i) {
-		Bone b(&dummy_data[i], &dummy_data[i + 1]);
-		dummy_bones.push_back(b);
-	}
-	for (int i = 0; i < dummy_bones.size() - 1; ++i) {
-		dummy_bones[i].children.emplace_back(&dummy_bones[i+1]);
-	}
-	recurseBoneTree(&dummy_bones[0], M, true);
+	// vector<Joint> dummy_data;
+	// vector<Bone> dummy_bones;
+	// dummy_data.push_back(Joint(0, glm::vec3(0, 0, 0), -1));
+	// dummy_data.push_back(Joint(1, glm::vec3(0, 2, 0), 0));
+	// dummy_data.push_back(Joint(2, glm::vec3(1, 2, 0), 1));
+	// dummy_data.push_back(Joint(3, glm::vec3(1, 1, 0), 2));
+	// dummy_data.push_back(Joint(4, glm::vec3(3, 1, 0), 3));
+	// Joint dummy_origin;
+	// Bone dummy_root (&dummy_origin, &dummy_data[0]);
+	// dummy_root.trans = glm::mat4(1);
+	// dummy_root.rot = glm::mat4(1);
+	// dummy_bones.push_back(dummy_root);
+	// for (int i = 0; i < dummy_data.size() - 1; ++i) {
+	// 	Bone b(&dummy_data[i], &dummy_data[i + 1]);
+	// 	dummy_bones.push_back(b);
+	// }
+	// for (int i = 0; i < dummy_bones.size() - 1; ++i) {
+	// 	dummy_bones[i].children.emplace_back(&dummy_bones[i+1]);
+
+	// }
+	// recurseBoneTree(&dummy_bones[0], M, true);
 }
 
 // Paremeters: current bone, M of parents
@@ -185,8 +186,8 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, bool isRoot) {
 
 		// calculate positions in parent coords
 		glm::mat4 invM = glm::inverse(M);
-		glm::vec4 from_pc = invM * glm::vec4(bone->from->position, 0);
-		glm::vec4 to_pc = invM * glm::vec4(bone->to->position, 0);
+		glm::vec4 from_pc = invM * glm::vec4(bone->from->position, 1);
+		glm::vec4 to_pc = invM * glm::vec4(bone->to->position, 1);
 		
 		cout << "From: " << bone->from->joint_index << " -> " << bone->to->joint_index << endl;
 		cout << "	from: " << from_pc << endl;
@@ -230,19 +231,21 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, bool isRoot) {
 			bone->trans[0][3] = bone->length;
 			bone->trans = glm::transpose(bone->trans);
 		}
-		cout << "	rotation: 	" << bone->rot << endl;
-		cout << "	translate: 	" << bone->trans << endl;
+		// cout << "	rotation: 	" << bone->rot << endl;
+		// cout << "	translate: 	" << bone->trans << endl;
 
-		cout << "	tangent: 	" << t << endl;
-		cout << "	v: 		 " << v << endl;
-		cout << "	normal: 	" << n << endl;
-		cout << "	binormal: 	" << b << endl;
+		// cout << "	tangent: 	" << t << endl;
+		// cout << "	v: 		 " << v << endl;
+		// cout << "	normal: 	" << n << endl;
+		// cout << "	binormal: 	" << b << endl;
 		
-		M =  M * bone->trans * bone->rot;
-		cout << "		source:    " << (glm::vec4(0,0,0,1) * M) << endl;
+		M = M * bone->trans;
+		cout << "		source:    " << (M * glm::vec4(0,0,0,1) ) << endl;
 		cout << "		world pos: " << bone->from->position << endl;
-		cout << "		dest: 	   " << (glm::vec4(bone->length,0,0,1) * M) << endl;
+		M = M * bone->rot;
+		cout << "		dest: 	   " << (M * glm::vec4(bone->length,0,0,1)) << endl;
 		cout << "		world pos: " << bone->to->position << endl;
+		
 		
 		// M = bone->rot * bone->trans * M ;
 		
