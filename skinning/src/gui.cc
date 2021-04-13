@@ -134,7 +134,7 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 	glm::vec3 world_coord = glm::unProject(glm::vec3(current_x_, current_y_, 0),
 		model_matrix_, projection_matrix_,
 		glm::vec4(0, 0, window_width_, window_height_));
-	glm::vec4 ray = glm::vec4(world_coord - eye_, 1);
+	glm::vec4 ray = glm::vec4(glm::normalize(world_coord - eye_), 1);
 	Bone* b = &mesh_->skeleton.bones[0];
 	float id = -1;
 	float t = 9999999;
@@ -146,6 +146,7 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 	}
 	cout << id << " " << index << endl;
 	// std::cout << t << std::endl;
+	// cout << ray[0] << " " << ray[1] << " " << ray[2] << endl;
 	current_bone_ = index;
 }
 
@@ -156,7 +157,6 @@ void GUI::raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::vec4 ray, f
 		glm::mat4 M = M_parent * bone->rot;
 		glm::mat4 invM = glm::inverse(M);
 		ray = invM * ray;
-
 		// calculate t
 		glm::vec3 o = glm::vec3(invM * glm::vec4(eye_, 1));
 		float ox = o[1];
@@ -165,20 +165,23 @@ void GUI::raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::vec4 ray, f
 		float dy = ray[2];
 		float a = dx*dx + dy*dy;
 		float b = 2*ox*dx + 2*oy*dy;
-		float c = ox*ox + oy*oy - kCylinderRadius;
+		float c = ox*ox + oy*oy - kCylinderRadius*kCylinderRadius;
 		float d, e;
 		float temp_t;
 
 		if (a != 0) {
-			// cout << "	a: " << a << endl;
+			cout << "	a: " << a << endl;
 			// cout << "	b: " << b << endl;
 			// cout << "	c: " << c << endl;
 			d = b / (2*a);
 			e = c - b*b/(4*a);
 			// DOES THIS ACTUALLY WORK????????????????????????????????????????????????????
-			float positive = sqrt(abs(-e/a))-d;
-			float negative = -1*sqrt(abs(-e/a))-d;
-			temp_t = positive < negative ? positive : negative;
+			// float positive = sqrt(abs(-e/a))-d;
+			// float negative = -1*sqrt(abs(-e/a))-d;
+			cout << sqrt(b*b - 4*a*c) << endl;
+			float positive = (-b + sqrt(b*b - 4*a*c)) / (2*a);
+			float negative = (-b - sqrt(b*b - 4*a*c)) / (2*a);
+			temp_t = min(positive, negative);
 		}
 		else {
 			d = 0;
@@ -190,7 +193,7 @@ void GUI::raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::vec4 ray, f
 		glm::vec3 pos = o + glm::vec3(ray)*temp_t;
 		if(pos[0] <= bone->length && temp_t < t && temp_t >= 0) {
 			id = bone->id;
-			cout << "In tree " << id << endl;
+			// cout << "In tree " << id << endl;
 			t = temp_t;
 		}
 		// std::cout << t << " " << temp_t << std::endl;

@@ -14,9 +14,17 @@ image.h
 string
 -
 
+../lib/utgraphicsutil/debuggl.h
+
 ../lib/utgraphicsutil/image.h
 vector
 -
+
+../lib/utgraphicsutil/jpegio.h
+string
+-
+image.h
+../lib/utgraphicsutil/image.h
 
 ../lib/utgraphicsutil/material.h
 image.h
@@ -46,17 +54,39 @@ mmdadapter.h
 
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/config.h
 
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/procedure_geometry.cc
-procedure_geometry.h
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/procedure_geometry.h
-bone_geometry.h
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/gui.cc
+gui.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/gui.h
 config.h
 /home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/config.h
-
-/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/procedure_geometry.h
-vector
+jpegio.h
 -
+bone_geometry.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.h
+iostream
+-
+algorithm
+-
+debuggl.h
+-
+glm/gtc/matrix_access.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+glm/gtx/quaternion.hpp
+-
+glm/gtx/transform.hpp
+-
+glm/gtx/intersect.hpp
+-
+
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/gui.h
 glm/glm.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+./bone_geometry.h
+/home/remusw/Documents/Graphics/Proj4/skinning/skinning/src/bone_geometry.h
+GLFW/glfw3.h
 -
 
