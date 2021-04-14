@@ -1,6 +1,7 @@
 #include "procedure_geometry.h"
 #include "bone_geometry.h"
 #include "config.h"
+#include <iostream>
 
 void create_floor(std::vector<glm::vec4>& floor_vertices, std::vector<glm::uvec3>& floor_faces)
 {
@@ -56,6 +57,8 @@ void create_cylinder_mesh(LineMesh& cylinder_mesh)
 			cylinder_mesh.indices.emplace_back((row - 1) * kCylinderGridSizeX + col, n);
 		}
 	}
+
+
 }
 
 void create_axes_mesh(LineMesh& axes_mesh)

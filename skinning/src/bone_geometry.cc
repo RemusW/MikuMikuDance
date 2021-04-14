@@ -104,7 +104,7 @@ void Mesh::loadPmd(const std::string& fn)
 		// cout << "Parent " << parent->joint_index << "'s Children: " << parent->children;
 	}
 	cout << "Num joints created: " << skeleton.joints.size() << endl;
-
+	
 	// Build the bones
 	// Create root bone -1
 	cout << "Building bones" << endl;
@@ -183,7 +183,7 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, float parent_length) {
 		glm::vec4 from_pc = invM * glm::vec4(bone->from->position, 1);
 		glm::vec4 to_pc = invM * glm::vec4(bone->to->position, 1);
 		
-		cout << "From: " << bone->from->joint_index << " -> " << bone->to->joint_index << endl;
+		// cout << "From: " << bone->from->joint_index << " -> " << bone->to->joint_index << endl;
 		// cout << "	from: " << from_pc << endl;
 		// cout << "	to:   " << to_pc << endl;
 		// cout << "	M: 		" << M << endl;
@@ -226,8 +226,8 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, float parent_length) {
 			bone->trans = glm::transpose(bone->trans);
 		}
 		parent_length = bone->length;
-		cout << "	rotation: 	" << bone->rot << endl;
-		cout << "	translate: 	" << bone->trans << endl;
+		// cout << "	rotation: 	" << bone->rot << endl;
+		// cout << "	translate: 	" << bone->trans << endl;
 
 		// cout << "	tangent: 	" << t << endl;
 		// cout << "	v: 		 " << v << endl;
@@ -235,11 +235,10 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, float parent_length) {
 		// cout << "	binormal: 	" << b << endl;
 		
 		M = M * bone->trans * bone->rot;
-		cout << "		source:    " << (M * glm::vec4(0,0,0,1) ) << endl;
-		cout << "		world pos: " << bone->from->position << endl;
-		// M = M * bone->rot;
-		cout << "		dest: 	   " << (M * glm::vec4(bone->length,0,0,1)) << endl;
-		cout << "		world pos: " << bone->to->position << endl;
+		// cout << "		source:    " << (M * glm::vec4(0,0,0,1) ) << endl;
+		// cout << "		world pos: " << bone->from->position << endl;
+		// cout << "		dest: 	   " << (M * glm::vec4(bone->length,0,0,1)) << endl;
+		// cout << "		world pos: " << bone->to->position << endl;
 		
 		
 		// M = bone->rot * bone->trans * M ;

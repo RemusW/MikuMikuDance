@@ -33,7 +33,7 @@ public:
 	static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	static void MouseScrollCallback(GLFWwindow* window, double dx, double dy);
 
-	void raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::vec4 ray, float& id, float& t);
+	void raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::mat4 M_parent_rot, glm::vec4 ray, float& id, float& t);
 
 	glm::vec3 getCenter() const { return center_; }
 	const glm::vec3& getCamera() const { return eye_; }
@@ -49,9 +49,12 @@ public:
 	bool isPlaying() const { return play_; }
 	float getCurrentPlayTime() const;
 
+	glm::mat4 getCurrentM() const { return current_M_; }
+
 private:
 	GLFWwindow* window_;
 	Mesh* mesh_;
+	
 
 	int window_width_, window_height_;
 	int view_width_, view_height_;
@@ -70,6 +73,8 @@ private:
 	float rotation_speed_ = 0.02f;
 	float zoom_speed_ = 0.1f;
 	float aspect_;
+
+	glm::mat4 current_M_;
 
 	glm::vec3 eye_ = glm::vec3(0.0f, 0.1f, camera_distance_);
 	glm::vec3 up_ = glm::vec3(0.0f, 1.0f, 0.0f);

@@ -132,13 +132,14 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 
 	// FIXME: highlight bones that have been moused over
 	glm::vec3 world_coord = glm::unProject(glm::vec3(current_x_, current_y_, 0),
-		model_matrix_, projection_matrix_,
+		view_matrix_ * model_matrix_, projection_matrix_,
 		glm::vec4(0, 0, window_width_, window_height_));
 	glm::vec4 ray = glm::vec4(glm::normalize(world_coord - eye_), 1);
+
 	Bone* b = &mesh_->skeleton.bones[0];
 	float id = -1;
 	float t = 9999999;
-	raycylinder_intersect(&mesh_->skeleton.bones[0], glm::mat4(1), ray, id, t);
+	raycylinder_intersect(&mesh_->skeleton.bones[0], glm::mat4(1), glm::mat4(1), ray, id, t);
 	int index = -1;
 	for(size_t i=0; i<mesh_->skeleton.bones.size(); ++i) {
 		if(id == mesh_->skeleton.bones[i].id)
@@ -150,67 +151,61 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 	current_bone_ = index;
 }
 
-void GUI::raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::vec4 ray, float& id, float& t) {
+void GUI::raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::mat4 M_parent_rot, glm::vec4 ray, float& id, float& t) {
 	// not the root bone, check intersection
 	if(bone->from->joint_index != -1) {
 		// transform ray into bone local
-		glm::mat4 M = M_parent * bone->rot;
+		glm::mat4 M = M_parent * bone->trans * bone->rot;
+		glm::mat4 M_rot = M_parent_rot * bone->rot;
 		glm::mat4 invM = glm::inverse(M);
-		ray = invM * ray;
+		glm::mat4 invM_rot = glm::inverse(bone->rot);
+		ray = invM_rot * ray;
 		// calculate t
-		glm::vec3 o = glm::vec3(invM * glm::vec4(eye_, 1));
+		glm::vec4 o = invM * glm::vec4(eye_, 1);
+		// cout << glm::to_string(ray) << endl;
+		// cout << o << endl;
 		float ox = o[1];
 		float oy = o[2];
 		float dx = ray[1];
 		float dy = ray[2];
 		float a = dx*dx + dy*dy;
 		float b = 2*ox*dx + 2*oy*dy;
-		float c = ox*ox + oy*oy - kCylinderRadius*kCylinderRadius;
-		float d, e;
+		float c = ox*ox + oy*oy;
+		float discriminant = b*b-4*a*c;
 		float temp_t;
 
-		if (a != 0) {
+		if (discriminant > 0) {
+			cout << "intersection, calculation" << endl;
 			cout << "	a: " << a << endl;
-			// cout << "	b: " << b << endl;
-			// cout << "	c: " << c << endl;
-			d = b / (2*a);
-			e = c - b*b/(4*a);
-			// DOES THIS ACTUALLY WORK????????????????????????????????????????????????????
-			// float positive = sqrt(abs(-e/a))-d;
-			// float negative = -1*sqrt(abs(-e/a))-d;
-			cout << sqrt(b*b - 4*a*c) << endl;
-			float positive = (-b + sqrt(b*b - 4*a*c)) / (2*a);
-			float negative = (-b - sqrt(b*b - 4*a*c)) / (2*a);
-			temp_t = min(positive, negative);
-		}
-		else {
-			d = 0;
-			e = 0;
-			temp_t = 999999;
-		}
-
-		// check if it is within bounds of the height of the bone
-		glm::vec3 pos = o + glm::vec3(ray)*temp_t;
-		if(pos[0] <= bone->length && temp_t < t && temp_t >= 0) {
-			id = bone->id;
-			// cout << "In tree " << id << endl;
-			t = temp_t;
+			cout << "	b: " << b << endl;
+			cout << "	c: " << c << endl;
+			float positive = (-b + sqrt(discriminant)) / (2*a);
+			float negative = (-b - sqrt(discriminant)) / (2*a);
+			cout << sqrt(discriminant) << " " << positive << " " << negative << " " << bone->id << endl;
+			if(positive <= kCylinderRadius*kCylinderRadius && positive <= negative)
+				temp_t = positive;
+			else if (negative <= kCylinderRadius*kCylinderRadius)
+				temp_t = negative;
+			else
+				temp_t = 9999;
+			
+			// check if it is within bounds of the height of the bone
+			glm::vec3 pos = glm::vec3(o) + glm::vec3(ray)*temp_t;
+			if(pos[0] < bone->length && temp_t < t && temp_t >= 0) {
+				id = bone->id;
+				// cout << "In tree " << id << endl;
+				t = temp_t;
+				current_M_ = M;
+				current_M_[0][3] = bone->length;
+			}
 		}
 		// std::cout << t << " " << temp_t << std::endl;
 		M_parent = M;
+		M_parent_rot = M_rot;
 	}
-
-	// float c0;
-	// for (int i = 0; i < mesh_->skeleton.bones.size(); ++i) {
-	// 	Bone* bone = &mesh_->skeleton.bones[i];
-	// 	ray = glm::inverse(bone->init_M) * ray;
-	// 	// glm::intersectRayPlane()		
-	// 	// glm::vec4 t_ray (ray, 0);
-	// 	// t_ray = glm::cross(bone->trans, t_ray);
-	// }
 	
 	for (size_t i=0; i<bone->children.size(); ++i) {
-		raycylinder_intersect(bone->children[i], M_parent, ray, id, t);
+		raycylinder_intersect(bone->children[i], M_parent, M_parent_rot, ray, id, t);
 	}
 }
 

@@ -192,6 +192,9 @@ int main(int argc, char* argv[])
 	auto joint_rot = make_uniform("joint_rot", rot_data);
 	// FIXME: define more ShaderUniforms for RenderPass if you want to use it.
 	//        Otherwise, do whatever you like here
+	glm::mat4 bone_transform = glm::mat4();
+	std::function<glm::mat4()> bone_transform_data = [&gui]() { return gui.getCurrentM(); };
+	auto std_bone_transform = make_uniform("bone_transform", bone_transform_data);
 
 	// Floor render pass
 	RenderDataInput floor_pass_input;
@@ -280,26 +283,26 @@ int main(int argc, char* argv[])
 	//        Otherwise do whatever you like.
 
 	RenderDataInput cylinder_pass_input;
-	cylinder_pass_input.assign(0, "vertex_position", cylinder_mesh.vertices.data(), cylinder_mesh.vertices.size(), 1, GL_FLOAT);
+	cylinder_pass_input.assign(0, "cid", cylinder_mesh.vertices.data(), cylinder_mesh.vertices.size(), 4, GL_FLOAT);
 	cylinder_pass_input.assignIndex(cylinder_mesh.indices.data(), cylinder_mesh.indices.size(), 2);
-	RenderPass cylinder_pass(-1,
-			cylinder_pass_input,
+	RenderPass cylinder_pass(-1, cylinder_pass_input,
 			{ cylinder_vertex_shader, nullptr, cylinder_fragment_shader},
-			{ std_model, std_view, std_proj, joint_trans },
+			{ std_model, std_view, std_proj, std_bone_transform },
 			{ "fragment_color" }
 			);
 
 	RenderDataInput axes_pass_input;
-	axes_pass_input.assign(0, "vertex_position", axes_mesh.vertices.data(), axes_mesh.vertices.size(), 1, GL_FLOAT);
+	axes_pass_input.assign(0, "aid", axes_mesh.vertices.data(), axes_mesh.vertices.size(), 4, GL_FLOAT);
 	axes_pass_input.assignIndex(axes_mesh.indices.data(), axes_mesh.indices.size(), 2);
 	RenderPass axes_pass(-1,
 			axes_pass_input,
 			{ axes_vertex_shader, nullptr, axes_fragment_shader},
-			{ std_model, std_view, std_proj, joint_trans },
+			{ std_model, std_view, std_proj, std_bone_transform },
 			{ "fragment_color" }
 			);
 
-	// 	RenderDataInput floor_pass_input;
+	// Floor render pass
+	// RenderDataInput floor_pass_input;
 	// floor_pass_input.assign(0, "vertex_position", floor_vertices.data(), floor_vertices.size(), 4, GL_FLOAT);
 	// floor_pass_input.assignIndex(floor_faces.data(), floor_faces.size(), 3);
 	// RenderPass floor_pass(-1,
@@ -357,16 +360,17 @@ int main(int argc, char* argv[])
 			                              GL_UNSIGNED_INT, 0));
 		}
 		draw_cylinder = (current_bone != -1 && gui.isTransparent());
-
 		if (true) {
+			//std::cout << "BOEN TRANSFORM: \n" << bone_transform_data << std::endl;
 			cylinder_pass.setup();
-			axes_pass.setup();
 			CHECK_GL_ERROR(glDrawElements(GL_LINES,
 			                              cylinder_mesh.indices.size() * 2,
 			                              GL_UNSIGNED_INT, 0));
+			axes_pass.setup();
 			CHECK_GL_ERROR(glDrawElements(GL_LINES,
 			                              axes_mesh.indices.size() * 2,
 			                              GL_UNSIGNED_INT, 0));
+
 		}
 
 		// Then draw floor.
