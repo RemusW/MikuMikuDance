@@ -33,7 +33,7 @@ public:
 	static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	static void MouseScrollCallback(GLFWwindow* window, double dx, double dy);
 
-	void raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::mat4 M_parent_rot, glm::vec4 ray, float& id, float& t);
+	void raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::vec4 ray, float& id, float& t);
 
 	glm::vec3 getCenter() const { return center_; }
 	const glm::vec3& getCamera() const { return eye_; }

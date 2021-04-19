@@ -77,6 +77,8 @@ glm/gtx/quaternion.hpp
 -
 glm/gtx/transform.hpp
 -
+glm/gtx/string_cast.hpp
+-
 glm/gtx/intersect.hpp
 -
 

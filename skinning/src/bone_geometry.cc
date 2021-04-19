@@ -212,6 +212,7 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, float parent_length) {
 		rot[2] = glm::vec4(b, 0);
 		rot[3] = glm::vec4(0,0,0,1);
 		bone->rot = rot;
+		bone->init_rot = rot;
 		// bone->rot = glm::transpose(rot);
 
 

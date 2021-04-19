@@ -72,15 +72,18 @@ struct LineMesh {
 struct Bone {
 	Bone()
 		: length(0),
+		  id(-1),
 		  trans(glm::mat4(1.0f)),
 		  rot(glm::mat4(1.0f)),
+		  init_rot(rot),
 		  init_M(glm::mat4(1.0f))
 	{
 	}
 
 	Bone(Joint* f, Joint* t)
 		: from(f),
-		  to(t)
+		  to(t),
+		  id(-1)
 	{
 	}
 
@@ -99,6 +102,7 @@ struct Bone {
 	Joint* to;
 	glm::mat4 trans;
 	glm::mat4 rot;
+	glm::mat4 init_rot;
 	glm::mat4 init_M;
 
 	std::vector<Bone*> children;

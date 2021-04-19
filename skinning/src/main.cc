@@ -360,7 +360,7 @@ int main(int argc, char* argv[])
 			                              GL_UNSIGNED_INT, 0));
 		}
 		draw_cylinder = (current_bone != -1 && gui.isTransparent());
-		if (true) {
+		if (draw_cylinder) {
 			//std::cout << "BOEN TRANSFORM: \n" << bone_transform_data << std::endl;
 			cylinder_pass.setup();
 			CHECK_GL_ERROR(glDrawElements(GL_LINES,
