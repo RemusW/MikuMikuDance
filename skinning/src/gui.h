@@ -74,7 +74,7 @@ private:
 	float zoom_speed_ = 0.1f;
 	float aspect_;
 
-	glm::mat4 current_M_;
+	glm::mat4 current_M_ = glm::mat4(1);
 
 	glm::vec3 eye_ = glm::vec3(0.0f, 0.1f, camera_distance_);
 	glm::vec3 up_ = glm::vec3(0.0f, 1.0f, 0.0f);
