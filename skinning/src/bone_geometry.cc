@@ -183,12 +183,6 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, float parent_length) {
 		glm::vec4 from_pc = invM * glm::vec4(bone->from->position, 1);
 		glm::vec4 to_pc = invM * glm::vec4(bone->to->position, 1);
 		
-		// cout << "From: " << bone->from->joint_index << " -> " << bone->to->joint_index << endl;
-		// cout << "	from: " << from_pc << endl;
-		// cout << "	to:   " << to_pc << endl;
-		// cout << "	M: 		" << M << endl;
-		// cout << "	invM: 	" << invM << endl;
-		
 		// calculate the rotation
 		glm::vec3 t = glm::normalize(glm::vec3(to_pc) - glm::vec3(from_pc));
 		glm::vec3 v = glm::vec3(t);
@@ -213,8 +207,6 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, float parent_length) {
 		rot[3] = glm::vec4(0,0,0,1);
 		bone->rot = rot;
 		bone->init_rot = rot;
-		// bone->rot = glm::transpose(rot);
-
 
 		// calc Translation
 		bone->trans = glm::mat4(1);
@@ -227,14 +219,6 @@ void Mesh::recurseBoneTree(Bone* bone, glm::mat4 M, float parent_length) {
 			bone->trans = glm::transpose(bone->trans);
 		}
 		parent_length = bone->length;
-		// cout << "	rotation: 	" << bone->rot << endl;
-		// cout << "	translate: 	" << bone->trans << endl;
-
-		// cout << "	tangent: 	" << t << endl;
-		// cout << "	v: 		 " << v << endl;
-		// cout << "	normal: 	" << n << endl;
-		// cout << "	binormal: 	" << b << endl;
-		
 		M = M * bone->trans * bone->rot;
 		// cout << "		source:    " << (M * glm::vec4(0,0,0,1) ) << endl;
 		// cout << "		world pos: " << bone->from->position << endl;

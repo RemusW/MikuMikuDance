@@ -133,26 +133,34 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 		look_ = glm::column(orientation_, 2);
 	}
 	else if (drag_bone && current_bone_ != -1) {
-		// FIXME: Handle bone rotation
+		// Get drag direction of mouse
 		cout << "Trying to drag a bone" << endl;
-		Bone* curB = &mesh_->skeleton.bones[current_bone_];
 		glm::vec3 worldToMouse = glm::unProject(glm::vec3(current_x_, current_y_, 0),
 			view_matrix_ * model_matrix_, projection_matrix_,
 			glm::vec4(0, 0, window_width_, window_height_));
 		glm::vec3 worldPrevMouse = glm::unProject(glm::vec3(last_x_, last_y_, 0),
 			view_matrix_ * model_matrix_, projection_matrix_,
 			glm::vec4(0, 0, window_width_, window_height_));
-		glm::vec3 origin(0,0,0);
+		glm::vec3 origin = glm::unProject(glm::vec3(0, 0, 0),
+			view_matrix_ * model_matrix_, projection_matrix_,
+			glm::vec4(0, 0, window_width_, window_height_));
+		// glm::vec3 origin = mesh_->skeleton.bones[current_bone_].from->position;
+		// glm::vec3 origin = glm::vec3(0,0,0);
 		glm::vec3 rotDir = glm::cross(worldToMouse-origin, worldPrevMouse-origin);
+		
 		// update rotation of current bone
-		float clockwise = glm::dot(rotDir, look_) > 0 ? 1 : -1;
-		curB->rot = glm::rotate(curB->rot, clockwise*3.14f/180*rotation_speed_, look_);
-		// recurse through bones, updating join_trans uniform and current_M_
-		Configuration config;
+		Bone* curB = &mesh_->skeleton.bones[current_bone_];
+		float clockwise = -1*glm::dot(glm::normalize(rotDir), glm::normalize(look_));
+		cout << clockwise << endl;
+		glm::mat4 rotM = glm::rotate(glm::mat4(1), -clockwise*rotation_speed_, glm::normalize(look_));
+		// curB->rot = rotM*curB->rot;
+		curB->rot = curB->rot*rotM;
+		// curB->rot = glm::rotate(curB->rot, clockwise*rotation_speed_, look_);
+		
+		// recurse through bones, updating join_trans uniform and current_
 		Bone* b_dummy = &mesh_->skeleton.bones[0];
-		recurseBoneTree(b_dummy, glm::mat4(1), &config);
-		cout << glm::to_string(curB->rot) << endl;
-
+		pose_changed_ = true;
+		recurseBoneTree(b_dummy, glm::mat4(1));
 		return;
 	}
 
@@ -175,19 +183,18 @@ void GUI::mousePosCallback(double mouse_x, double mouse_y)
 	current_bone_ = index;
 }
 
-void GUI::recurseBoneTree(Bone* bone, glm::mat4 M_parent, Configuration* config) {
+void GUI::recurseBoneTree(Bone* bone, glm::mat4 M_parent) {
 	glm::mat4 M = M_parent;
 	if (bone->id != -1) {
 		M = M * bone->trans * bone->rot;
-		// bone->to->position = M*glm::vec4(bone->length,0,0,1);
-		// mesh_->getCurrentQ()->trans[bone->to->joint_index] = glm::vec3(M * glm::vec4(bone->length, 0, 0, 1)); 
+		bone->from->position = glm::vec3(M * glm::vec4(0, 0, 0, 1));
+		bone->to->position = glm::vec3(M * glm::vec4(bone->length, 0, 0, 1));
 		if(bone->id==current_bone_) {
-			mesh_->skeleton.cache.trans[bone->to->joint_index] = glm::vec3(M * glm::vec4(bone->length, 0, 0, 1));
 			current_M_ = M;
 		}
 	}
 	for (size_t i = 0; i < bone->children.size(); ++i) {
-		recurseBoneTree(bone->children[i], M, config);
+		recurseBoneTree(bone->children[i], M);
 	}
 }
 

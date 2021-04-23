@@ -361,7 +361,7 @@ int main(int argc, char* argv[])
 		}
 		draw_cylinder = (current_bone != -1 && gui.isTransparent());
 		if (draw_cylinder) {
-			//std::cout << "BOEN TRANSFORM: \n" << bone_transform_data << std::endl;
+			// std::cout << glm::to_string(mesh.skeleton.cache.trans[1]);
 			cylinder_pass.setup();
 			CHECK_GL_ERROR(glDrawElements(GL_LINES,
 			                              cylinder_mesh.indices.size() * 2,

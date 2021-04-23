@@ -34,7 +34,7 @@ public:
 	static void MouseScrollCallback(GLFWwindow* window, double dx, double dy);
 
 	void raycylinder_intersect(Bone* bone, glm::mat4 M_parent, glm::mat4 M_par_rot, glm::vec4 ray, float& id, float& t);
-	void recurseBoneTree(Bone* bone, glm::mat4 M_parent, Configuration* config);
+	void recurseBoneTree(Bone* bone, glm::mat4 M_parent);
 
 	glm::vec3 getCenter() const { return center_; }
 	const glm::vec3& getCamera() const { return eye_; }
